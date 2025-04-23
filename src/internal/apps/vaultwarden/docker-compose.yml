@@ -1,0 +1,17 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: "https://{SUBDOMAIN:-vw}.${DOMAIN}"
+    volumes:
+      - ./vw-data/:/data/
+    ports:
+      - ${PORT}:80
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`{SUBDOMAIN:-vw}.${DOMAIN}`)"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=${PORT}"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
