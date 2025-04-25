@@ -119,6 +119,10 @@ func saveResults(m model) (tea.Model, tea.Cmd) {
 		m.err = err
 		return m, nil
 	}
+	if err := os.MkdirAll(internal.TargetDir, 0755); err != nil {
+		m.err = err
+		return m, nil
+	}
 	err = os.WriteFile(fmt.Sprintf("%s/config.toml", internal.TargetDir), content, 0644)
 	if err != nil {
 		m.err = err
