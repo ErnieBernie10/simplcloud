@@ -13,9 +13,14 @@ var startCmd = &cobra.Command{
 	Short: "Start the master service",
 	Long:  `Start the master service. This will start the master service and all the apps that are installed.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		run := internal.NewRunContext(internal.TargetDir, cmd.Context())
 		fmt.Println("Starting master service...")
-		if !internal.IsMasterRunning() {
-			internal.RunMaster()
+		if !run.IsMasterRunning() {
+			err := run.RunMaster()
+			if err != nil {
+				fmt.Println("Error starting master service:", err)
+				return
+			}
 			fmt.Println("Master service started")
 		} else {
 			fmt.Println("Master service is already running")

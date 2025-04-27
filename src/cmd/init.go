@@ -1,11 +1,10 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
-	"text/template"
 
-	"github.com/BurntSushi/toml"
 	"github.com/ErnieBernie10/simplecloud/internal"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -96,86 +95,27 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-type Config struct {
-	Domain string `toml:"domain"`
-	Email  string `toml:"email"`
-}
-type TomlConfig struct {
-	Config Config `toml:"Config"`
-}
-
 func saveResults(m model) (tea.Model, tea.Cmd) {
 	// Write toml file with results
 	m.domain = m.inputs[domain].Value()
 	m.email = m.inputs[email].Value()
-	config := TomlConfig{
-		Config: Config{
+	config := internal.TomlConfig{
+		Config: internal.Config{
 			Domain: m.domain,
 			Email:  m.email,
 		},
 	}
-	content, err := toml.Marshal(config)
+
+	run := internal.NewRunContext(internal.TargetDir, context.Background())
+	err := run.Bootstrap(config)
 	if err != nil {
-		m.err = err
-		return m, nil
-	}
-	if err := os.MkdirAll(internal.TargetDir, 0755); err != nil {
-		m.err = err
-		return m, nil
-	}
-	err = os.WriteFile(fmt.Sprintf("%s/config.toml", internal.TargetDir), content, 0644)
-	if err != nil {
-		m.err = err
-		return m, nil
+		m.err = fmt.Errorf("failed to save config: %w", err)
+		return m, tea.Quit
 	}
 
-	if err = createInitDockerCompose(); err != nil {
-		m.err = err
-		return m, nil
-	}
-	if err = createInitEnv(config); err != nil {
-		m.err = err
-		return m, nil
-	}
 	fmt.Println("Config saved successfully")
 
 	return m, tea.Quit
-}
-
-func createInitEnv(config TomlConfig) error {
-	env, err := internal.Opt.ReadFile("traefik/.env")
-	if err != nil {
-		return err
-	}
-	tmpl, err := template.New("env").Parse(string(env))
-	if err != nil {
-		return err
-	}
-	envFile, err := os.Create(fmt.Sprintf("%s/.env", internal.TargetDir))
-	if err != nil {
-		return err
-	}
-	defer envFile.Close()
-	err = tmpl.Execute(envFile, map[string]string{
-		"Domain": config.Config.Domain,
-		"Email":  config.Config.Email,
-	})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func createInitDockerCompose() error {
-	traefik, err := internal.Opt.ReadFile("traefik/docker-compose.yml")
-	if err != nil {
-		return err
-	}
-	err = os.WriteFile(fmt.Sprintf("%s/docker-compose.yml", internal.TargetDir), traefik, 0644)
-	if err != nil {
-		return err
-	}
-	return nil
 }
 
 const (
