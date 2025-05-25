@@ -13,7 +13,10 @@
             "args": [
                 "install",
                 "vaultwarden"
-            ]
+            ],
+            "env": {
+                "DOCKER_HOST": "tcp://100.87.239.75:2375",
+            }
         }
     ]
 }

@@ -57,6 +57,7 @@ func (c *RunContext) IsMasterRunning() bool {
 		Filters: args,
 	})
 	if err != nil {
+		fmt.Println("Error listing containers:", err)
 		return false
 	}
 

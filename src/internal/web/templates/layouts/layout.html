@@ -1,0 +1,15 @@
+{{ define "layout" }}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ block "title" . }}Simplcloud{{ end }}</title>
+</head>
+<body>
+    HEADER
+
+    {{ template "content" . }}
+
+    FOOTER
+</body>
+</html>
+{{ end }}

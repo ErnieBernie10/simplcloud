@@ -1,0 +1,73 @@
+services:
+  db:
+    image: mariadb:lts
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    environment:
+      MYSQL_ROOT_PASSWORD: "{MYSQL_ROOT_PASSWORD}"
+      MYSQL_PASSWORD: "{MYSQL_PASSWORD}"
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+    volumes:
+      - ./db:/var/lib/mysql
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - ./redis:/data
+
+  nextcloud:
+    image: nextcloud:apache
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    environment:
+      MYSQL_PASSWORD: "{MYSQL_PASSWORD}"
+      MYSQL_DATABASE: nextcloud
+      MYSQL_USER: nextcloud
+      MYSQL_HOST: db
+      REDIS_HOST: redis
+      NEXTCLOUD_ADMIN_USER: admin
+      NEXTCLOUD_ADMIN_PASSWORD: admin
+      NEXTCLOUD_TRUSTED_DOMAINS: "{SUBDOMAIN}.{DOMAIN}"
+    volumes:
+      - ./nextcloud:/var/www/html
+      - ./nextcloud_data:/var/www/html/data
+    depends_on:
+      - db
+      - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`{SUBDOMAIN}.${DOMAIN}`)"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=${PORT}"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
+
+  collabora:
+    image: collabora/code
+    restart: unless-stopped
+    environment:
+      - domain={COLLABORA_SUBDOMAIN:-collabora}\.${DOMAIN}
+      - username={COLABORA_USERNAME}
+      - password={COLABORA_PASSWORD}
+      - extra_params=--o:ssl.enable=true
+      - extra_params=--o:ssl.termination=true
+    ports:
+      - 9980:9980
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`{COLLABORA_SUBDOMAIN}.${DOMAIN}`)"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=9980"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.13
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    volumes:
+      - ./elasticsearch:/usr/share/elasticsearch/data
+    mem_limit: 2g
