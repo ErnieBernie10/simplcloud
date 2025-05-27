@@ -3,7 +3,7 @@ package controller
 import (
 	"net/http"
 
-	"github.com/ErnieBernie10/simplecloud/internal/web/core"
+	"github.com/ErnieBernie10/simplecloud/src/internal/web/core"
 )
 
 type HomeController struct {

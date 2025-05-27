@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/ErnieBernie10/simplecloud/internal"
+	"github.com/ErnieBernie10/simplecloud/src/internal"
 	"github.com/spf13/cobra"
 )
 

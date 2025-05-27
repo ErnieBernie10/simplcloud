@@ -1,15 +1,36 @@
 {{ define "layout" }}
-<!DOCTYPE html>
-<html>
-<head>
+<!doctype html>
+<html lang="en">
+  <head>
     <title>{{ block "title" . }}Simplcloud{{ end }}</title>
-</head>
-<body>
-    HEADER
-
-    {{ template "content" . }}
-
-    FOOTER
-</body>
+  </head>
+  <body>
+    <header class="col">
+      <svg
+        width="36"
+        xmlns="http://www.w3.org/2000/svg"
+        height="36"
+        id="screenshot-81a1cdf3-c475-8081-8006-3e3caa06f15d"
+        viewBox="0 0 36 36"
+        xmlns:xlink="http://www.w3.org/1999/xlink"
+        fill="none"
+        version="1.1"
+      >
+        <g id="shape-81a1cdf3-c475-8081-8006-3e3caa06f15d">
+          <g class="fills" id="fills-81a1cdf3-c475-8081-8006-3e3caa06f15d">
+            <ellipse
+              cx="18"
+              cy="18"
+              rx="18"
+              ry="18"
+              transform="matrix(1.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000)"
+              style="fill: rgb(143, 46, 46); fill-opacity: 1"
+            />
+          </g>
+        </g>
+      </svg>
+    </header>
+    Test {{ template "content" . }} FOOTER
+  </body>
 </html>
 {{ end }}

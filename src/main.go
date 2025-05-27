@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/ErnieBernie10/simplecloud/cmd"
-	"github.com/ErnieBernie10/simplecloud/internal"
+	"github.com/ErnieBernie10/simplecloud/src/cmd"
+	"github.com/ErnieBernie10/simplecloud/src/internal"
 	"github.com/joho/godotenv"
 )
 

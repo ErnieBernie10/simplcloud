@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ErnieBernie10/simplecloud/internal"
+	"github.com/ErnieBernie10/simplecloud/src/internal"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/spf13/cobra"

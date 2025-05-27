@@ -1,1 +1,21 @@
 pkg/
+build/
+
+# User-specific files
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/usage.statistics.xml
+.idea/jsLibraryMappings.xml
+
+# Sensitive or local config files
+.idea/dataSources.xml
+.idea/dataSources.local.xml
+.idea/sqlDataSources.xml
+.idea/sqlDataSources.local.xml
+.idea/dynamic.xml
+
+# OS or environment specific
+.idea/.name
+
+node_modules
