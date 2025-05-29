@@ -146,3 +146,23 @@ func (c *RunContext) config() (TomlConfig, error) {
 	}
 	return config, nil
 }
+
+func (c *RunContext) GetApps() ([]App, error) {
+
+	var apps []App
+	files, err := Opt.ReadDir("apps")
+	if err != nil {
+		return apps, err
+	}
+	for _, file := range files {
+		if file.IsDir() {
+			app, err := c.GetApp(file.Name())
+			if err != nil {
+				return apps, err
+			}
+			apps = append(apps, *app)
+		}
+	}
+
+	return apps, nil
+}

@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"path/filepath"
 	"syscall"
 
+	"github.com/ErnieBernie10/simplecloud/src/internal"
 	"github.com/ErnieBernie10/simplecloud/src/internal/web/controller"
 	"github.com/ErnieBernie10/simplecloud/src/internal/web/core"
 )
@@ -25,12 +27,13 @@ func Serve() {
 
 	logger := log.New(log.Writer(), "web: ", log.LstdFlags)
 
-	appContext := &core.AppContext{
-		Template: tmplMngr,
-		Logger:   logger,
-	}
-
 	mux := http.NewServeMux() // Use ExactServeMux to avoid route duplication
+
+	appContext := &core.AppContext{
+		Template:   tmplMngr,
+		Logger:     logger,
+		RunContext: internal.NewRunContext(root, context.Background()),
+	}
 
 	staticDir := filepath.Join(root, "static")
 	fs := http.FileServer(http.Dir(staticDir))

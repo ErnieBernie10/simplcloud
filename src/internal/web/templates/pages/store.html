@@ -1,0 +1,7 @@
+{{ define "content" }}
+    <div>Store</div>
+    {{ range $app := . }}
+        {{ template "app" $app }}
+    {{ end }}
+{{ end }}
+{{ template "layout" . }}
