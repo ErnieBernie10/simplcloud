@@ -1,36 +1,46 @@
 {{ define "layout" }}
-<!doctype html>
-<html lang="en">
-  <head>
-    <title>{{ block "title" . }}Simplcloud{{ end }}</title>
-  </head>
-  <body>
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <title>{{ block "title" . }}Simplcloud{{ end }}</title>
+        <link rel="stylesheet" type="text/css" href="/static/output.css"></link>
+    </head>
+    <body>
     <header class="col">
-      <svg
-        width="36"
-        xmlns="http://www.w3.org/2000/svg"
-        height="36"
-        id="screenshot-81a1cdf3-c475-8081-8006-3e3caa06f15d"
-        viewBox="0 0 36 36"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        fill="none"
-        version="1.1"
-      >
-        <g id="shape-81a1cdf3-c475-8081-8006-3e3caa06f15d">
-          <g class="fills" id="fills-81a1cdf3-c475-8081-8006-3e3caa06f15d">
-            <ellipse
-              cx="18"
-              cy="18"
-              rx="18"
-              ry="18"
-              transform="matrix(1.000000, 0.000000, 0.000000, 1.000000, 0.000000, 0.000000)"
-              style="fill: rgb(143, 46, 46); fill-opacity: 1"
-            />
-          </g>
-        </g>
-      </svg>
+        <div>
+            <div class="navbar bg-base-100 shadow-sm">
+                <div class="navbar-start">
+                    <div class="mx-8 w-5 h-5 bg-red-800 rounded-full"></div>
+                    <div class="dropdown">
+                        <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /> </svg>
+                        </div>
+                        <ul
+                                tabindex="0"
+                                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+                            <li><a class="underline">Apps</a></li>
+                            <li><a class="underline">Users</a></li>
+                            <li><a class="underline">Store</a></li>
+                        </ul>
+                    </div>
+                    <a class="btn btn-ghost text-xl">simplcloud</a>
+                </div>
+                <div class="navbar-center hidden lg:flex">
+                    <ul class="menu menu-horizontal px-1">
+                        <li><a class="underline">Apps</a></li>
+                        <li><a class="underline">Users</a></li>
+                        <li><a class="underline">Store</a></li>
+                    </ul>
+                </div>
+                <div class="navbar-end">
+                    <input type="checkbox" value="light" class="toggle theme-controller" />
+                </div>
+            </div>
+        </div>
     </header>
-    Test {{ template "content" . }} FOOTER
-  </body>
-</html>
+    <div class="container mx-auto">
+        Test {{ template "content" . }} FOOTER
+    </div>
+    </body>
+    </html>
 {{ end }}

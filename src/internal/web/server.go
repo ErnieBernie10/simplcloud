@@ -1,10 +1,14 @@
 package web
 
 import (
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"path/filepath"
+	"syscall"
 
 	"github.com/ErnieBernie10/simplecloud/src/internal/web/controller"
 	"github.com/ErnieBernie10/simplecloud/src/internal/web/core"
@@ -16,6 +20,7 @@ func Serve() {
 		log.Fatal(err)
 	}
 	root = filepath.Dir(root)
+	fmt.Println("root:", root)
 	tmplMngr := core.NewTemplateManager(filepath.Join(root, "templates"))
 
 	logger := log.New(log.Writer(), "web: ", log.LstdFlags)
@@ -27,6 +32,10 @@ func Serve() {
 
 	mux := http.NewServeMux() // Use ExactServeMux to avoid route duplication
 
+	staticDir := filepath.Join(root, "static")
+	fs := http.FileServer(http.Dir(staticDir))
+	mux.Handle("/static/", http.StripPrefix("/static/", fs))
+
 	controller.SetupHome(mux, appContext)
 
 	server := &http.Server{
@@ -34,13 +43,19 @@ func Serve() {
 		Handler: mux,
 	}
 
-	staticDir := filepath.Join(root, "static")
-	fs := http.FileServer(http.Dir(staticDir))
-	mux.Handle("static/", http.StripPrefix("static/", fs))
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
-	log.Println("Server running on http://localhost:8080")
-	err = server.ListenAndServe() // this blocks and waits for requests
-	if err != nil {
+	go func() {
+		<-stop // Wait for a termination signal
+		log.Println("Shutting down server...")
+		if err := server.Close(); err != nil {
+			log.Printf("Error shutting down server: %s", err)
+		}
+	}()
+
+	log.Println("Starting server on :8080")
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("Server failed: %s", err)
 	}
 }
