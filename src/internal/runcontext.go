@@ -37,23 +37,23 @@ func NewRunContext(targetDir string, c context.Context) *RunContext {
 	}
 }
 
-func (c *RunContext) DockerProjectName() string {
-	return strings.ToLower(filepath.Base(c.TargetDir))
+func (r *RunContext) DockerProjectName() string {
+	return strings.ToLower(filepath.Base(r.TargetDir))
 }
 
-func (c *RunContext) IsMasterRunning() bool {
+func (r *RunContext) IsMasterRunning() bool {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
 		return false
 	}
 
-	projectName := c.DockerProjectName()
+	projectName := r.DockerProjectName()
 
 	args := filters.NewArgs()
 	args.Add("label", fmt.Sprintf("com.docker.compose.project=%s", projectName))
 	args.Add("status", "running")
 
-	containers, err := cli.ContainerList(c.Context, container.ListOptions{
+	containers, err := cli.ContainerList(r.Context, container.ListOptions{
 		Filters: args,
 	})
 	if err != nil {
@@ -65,30 +65,30 @@ func (c *RunContext) IsMasterRunning() bool {
 
 }
 
-func (c *RunContext) Bootstrap(config TomlConfig) error {
+func (r *RunContext) Bootstrap(config TomlConfig) error {
 	content, err := toml.Marshal(config)
 	if err != nil {
 		return err
 	}
-	if err := os.MkdirAll(c.TargetDir, 0755); err != nil {
+	if err := os.MkdirAll(r.TargetDir, 0755); err != nil {
 		return err
 	}
-	err = os.WriteFile(fmt.Sprintf("%s/config.toml", c.TargetDir), content, 0644)
+	err = os.WriteFile(fmt.Sprintf("%s/config.toml", r.TargetDir), content, 0644)
 	if err != nil {
 		return err
 	}
 
-	if err = c.createInitDockerCompose(); err != nil {
+	if err = r.createInitDockerCompose(); err != nil {
 		return err
 	}
-	if err = c.createInitEnv(config); err != nil {
+	if err = r.createInitEnv(config); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (c *RunContext) createInitEnv(config TomlConfig) error {
+func (r *RunContext) createInitEnv(config TomlConfig) error {
 	env, err := Opt.ReadFile("traefik/.env")
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func (c *RunContext) createInitEnv(config TomlConfig) error {
 	if err != nil {
 		return err
 	}
-	envFile, err := os.Create(fmt.Sprintf("%s/.env", c.TargetDir))
+	envFile, err := os.Create(fmt.Sprintf("%s/.env", r.TargetDir))
 	if err != nil {
 		return err
 	}
@@ -112,42 +112,42 @@ func (c *RunContext) createInitEnv(config TomlConfig) error {
 	return nil
 }
 
-func (c *RunContext) createInitDockerCompose() error {
+func (r *RunContext) createInitDockerCompose() error {
 	traefik, err := Opt.ReadFile("traefik/docker-compose.yml")
 	if err != nil {
 		return err
 	}
-	err = os.WriteFile(fmt.Sprintf("%s/docker-compose.yml", c.TargetDir), traefik, 0644)
+	err = os.WriteFile(fmt.Sprintf("%s/docker-compose.yml", r.TargetDir), traefik, 0644)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *RunContext) RunMaster() error {
-	cmd := exec.Command("docker", "compose", "-f", c.DockerComposeFile, "up", "-d")
+func (r *RunContext) RunMaster() error {
+	cmd := exec.Command("docker", "compose", "-f", r.DockerComposeFile, "up", "-d")
 	return cmd.Run()
 }
 
-func (c *RunContext) StopMaster() error {
-	cmd := exec.Command("docker", "compose", "-f", c.DockerComposeFile, "down")
+func (r *RunContext) StopMaster() error {
+	cmd := exec.Command("docker", "compose", "-f", r.DockerComposeFile, "down")
 	return cmd.Run()
 }
 
-func (c *RunContext) RestartMaster() error {
-	cmd := exec.Command("docker", "compose", "-f", c.DockerComposeFile, "restart")
+func (r *RunContext) RestartMaster() error {
+	cmd := exec.Command("docker", "compose", "-f", r.DockerComposeFile, "restart")
 	return cmd.Run()
 }
 
-func (c *RunContext) config() (TomlConfig, error) {
+func (r *RunContext) config() (TomlConfig, error) {
 	var config TomlConfig
-	if _, err := toml.DecodeFile(fmt.Sprintf("%s/config.toml", c.TargetDir), &config); err != nil {
+	if _, err := toml.DecodeFile(fmt.Sprintf("%s/config.toml", r.TargetDir), &config); err != nil {
 		return config, err
 	}
 	return config, nil
 }
 
-func (c *RunContext) GetApps() ([]App, error) {
+func (r *RunContext) GetApps() ([]App, error) {
 
 	var apps []App
 	files, err := Opt.ReadDir("apps")
@@ -156,7 +156,7 @@ func (c *RunContext) GetApps() ([]App, error) {
 	}
 	for _, file := range files {
 		if file.IsDir() {
-			app, err := c.GetApp(file.Name())
+			app, err := r.GetApp(file.Name())
 			if err != nil {
 				return apps, err
 			}

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
 	"html/template"
 	"os"
 	"os/exec"
@@ -19,10 +20,25 @@ type App struct {
 	EnvTemplate           string
 	DockerComposeFile     string
 	EnvFile               string
+	Meta                  AppMeta
 }
 
-func (c *RunContext) GetApp(name string) (*App, error) {
+type AppMetaFile struct {
+	App AppMeta `yaml:"app"`
+}
+
+type AppMeta struct {
+	DisplayName string `yaml:"display_name"`
+	Logo        string `yaml:"logo"`
+	Description string `yaml:"description"`
+}
+
+func (r *RunContext) GetApp(name string) (*App, error) {
 	file, err := Opt.ReadFile(fmt.Sprintf("apps/%s/docker-compose.yml", name))
+	if err != nil {
+		return nil, err
+	}
+	metaFile, err := Opt.ReadFile(fmt.Sprintf("apps/%s/meta.yml", name))
 	if err != nil {
 		return nil, err
 	}
@@ -30,9 +46,15 @@ func (c *RunContext) GetApp(name string) (*App, error) {
 	if err != nil {
 		return nil, err
 	}
-	appTargetDir := fmt.Sprintf("%s/apps/%s", c.TargetDir, name)
+	appTargetDir := fmt.Sprintf("%s/apps/%s", r.TargetDir, name)
+
+	var meta AppMetaFile
+	err = yaml.Unmarshal(metaFile, &meta)
+	if err != nil {
+		return nil, err
+	}
 	return &App{
-		Context:               c,
+		Context:               r,
 		Name:                  name,
 		Version:               "1.0.0",        // todo
 		Description:           "A sample app", // todo
@@ -42,6 +64,7 @@ func (c *RunContext) GetApp(name string) (*App, error) {
 		EnvTemplate:           string(env),
 		DockerComposeFile:     fmt.Sprintf("%s/docker-compose.yml", appTargetDir),
 		EnvFile:               fmt.Sprintf("%s/.env", appTargetDir),
+		Meta:                  meta.App,
 	}, nil
 }
 

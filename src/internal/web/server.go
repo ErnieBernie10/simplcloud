@@ -40,6 +40,7 @@ func Serve() {
 	mux.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	controller.SetupHome(mux, appContext)
+	controller.SetupStore(mux, appContext)
 
 	server := &http.Server{
 		Addr:    ":8080",
