@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ var installCmd = &cobra.Command{
 			fmt.Printf("Failed to install app %s: %v\n", app, err)
 			os.Exit(1)
 		} else {
-			fmt.Printf("App %s installed successfully!\n", app)
+			fmt.Printf("Logo %s installed successfully!\n", app)
 		}
 	},
 }

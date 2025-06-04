@@ -24,5 +24,5 @@ func SetupHome(mux *http.ServeMux, context *core.AppContext) {
 	homeController := NewHomeController(context)
 
 	// Register routes
-	mux.HandleFunc("/", core.ExactRoute("/", homeController.Index))
+	mux.HandleFunc("/", homeController.Index)
 }

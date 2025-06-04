@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"github.com/ErnieBernie10/simplecloud/src/internal/web/core"
+	"github.com/ErnieBernie10/simplecloud/src/internal/api/core"
 	"net/http"
 )
 
@@ -16,17 +16,12 @@ func NewStoreController(appContext *core.AppContext) *StoreController {
 }
 
 func (c *StoreController) Store(w http.ResponseWriter, r *http.Request) {
-	//apps, err := c.AppContext.RunContext.GetApps()
-	//if err != nil {
-	//	http.Error(w, err.Error(), http.StatusInternalServerError)
-	//	return
-	//}
-	//c.AppContext.Template.Render(w, "store.html", apps, core.BaseLayout)
+
 }
 
 func SetupStore(mux *http.ServeMux, context *core.AppContext) {
 	storeController := NewStoreController(context)
 
 	// Register routes
-	mux.HandleFunc("/store", storeController.Store)
+	mux.HandleFunc("GET /store", storeController.Store)
 }

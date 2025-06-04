@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"github.com/ErnieBernie10/simplecloud/src/internal/web"

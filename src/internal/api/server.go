@@ -1,45 +1,40 @@
-package web
+package api
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"github.com/ErnieBernie10/simplecloud/src/internal/api/controller"
+	"github.com/ErnieBernie10/simplecloud/src/internal/api/core"
+	"github.com/ErnieBernie10/simplecloud/src/internal/api/services"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"syscall"
-
-	"github.com/ErnieBernie10/simplecloud/src/internal"
-	"github.com/ErnieBernie10/simplecloud/src/internal/web/controller"
-	"github.com/ErnieBernie10/simplecloud/src/internal/web/core"
 )
 
 func Serve() {
 	root, err := os.Executable()
 	if err != nil {
 		log.Fatal(err)
+		return
 	}
 	root = filepath.Dir(root)
 	fmt.Println("root:", root)
-	tmplMngr := core.NewTemplateManager(filepath.Join(root, "templates"))
 
 	logger := log.New(log.Writer(), "web: ", log.LstdFlags)
 
 	mux := http.NewServeMux() // Use ExactServeMux to avoid route duplication
 
-	appContext := &core.AppContext{
-		Template:   tmplMngr,
-		Logger:     logger,
-		RunContext: internal.NewRunContext(root, context.Background()),
+	storeDir := os.Getenv("STORE_DIR")
+	storeService, err := services.NewStoreService(storeDir + "/store.json")
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
+	appContext := core.NewAppContext(logger, storeDir+"/store.json", storeService)
 
-	staticDir := filepath.Join(root, "static")
-	fs := http.FileServer(http.Dir(staticDir))
-	mux.Handle("/static/", http.StripPrefix("/static/", fs))
-
-	controller.SetupHome(mux, appContext)
 	controller.SetupStore(mux, appContext)
 	controller.SetupApp(mux, appContext)
 

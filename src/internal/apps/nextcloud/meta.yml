@@ -1,4 +1,5 @@
 app:
   display_name: Nextcloud
   description: A personal cloud
-  logo: ""
+  logo: "logo.svg"
+  app_version: "30.1"

@@ -12,9 +12,6 @@ import (
 type App struct {
 	Context               *RunContext
 	Name                  string
-	Version               string
-	Description           string
-	Author                string
 	TargetDir             string
 	DockerComposeTemplate string
 	EnvTemplate           string
@@ -31,6 +28,7 @@ type AppMeta struct {
 	DisplayName string `yaml:"display_name"`
 	Logo        string `yaml:"logo"`
 	Description string `yaml:"description"`
+	AppVersion  string `yaml:"app_version"`
 }
 
 func (r *RunContext) GetApp(name string) (*App, error) {
@@ -56,9 +54,6 @@ func (r *RunContext) GetApp(name string) (*App, error) {
 	return &App{
 		Context:               r,
 		Name:                  name,
-		Version:               "1.0.0",        // todo
-		Description:           "A sample app", // todo
-		Author:                "John Doe",     // todo
 		TargetDir:             appTargetDir,
 		DockerComposeTemplate: string(file),
 		EnvTemplate:           string(env),
