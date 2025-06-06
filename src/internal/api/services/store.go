@@ -33,3 +33,7 @@ func (s *Store) GetApp(name string) (*internal.StoreApp, error) {
 	}
 	return nil, internal.ErrAppNotFound
 }
+
+func (s *Store) GetApps() ([]internal.StoreApp, error) {
+	return s.Apps, nil
+}

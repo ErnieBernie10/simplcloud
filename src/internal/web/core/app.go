@@ -10,7 +10,7 @@ const (
 )
 
 type AppContext struct {
-	Template   *TemplateManager
-	Logger     *log.Logger
-	RunContext *internal.RunContext
+	Template     *TemplateManager
+	Logger       *log.Logger
+	StoreService internal.IStore
 }

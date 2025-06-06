@@ -16,12 +16,12 @@ func NewStoreController(appContext *core.AppContext) *StoreController {
 }
 
 func (c *StoreController) Store(w http.ResponseWriter, r *http.Request) {
-	//apps, err := c.AppContext.RunContext.GetApps()
-	//if err != nil {
-	//	http.Error(w, err.Error(), http.StatusInternalServerError)
-	//	return
-	//}
-	//c.AppContext.Template.Render(w, "store.html", apps, core.BaseLayout)
+	apps, err := c.AppContext.StoreService.GetApps()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	c.AppContext.Template.Render(w, "store.html", apps, core.BaseLayout)
 }
 
 func SetupStore(mux *http.ServeMux, context *core.AppContext) {

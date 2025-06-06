@@ -1,9 +1,9 @@
 package web
 
 import (
-	"context"
 	"errors"
 	"fmt"
+	"github.com/ErnieBernie10/simplecloud/src/internal/web/service"
 	"log"
 	"net/http"
 	"os"
@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	"syscall"
 
-	"github.com/ErnieBernie10/simplecloud/src/internal"
 	"github.com/ErnieBernie10/simplecloud/src/internal/web/controller"
 	"github.com/ErnieBernie10/simplecloud/src/internal/web/core"
 )
@@ -30,9 +29,9 @@ func Serve() {
 	mux := http.NewServeMux() // Use ExactServeMux to avoid route duplication
 
 	appContext := &core.AppContext{
-		Template:   tmplMngr,
-		Logger:     logger,
-		RunContext: internal.NewRunContext(root, context.Background()),
+		Template:     tmplMngr,
+		Logger:       logger,
+		StoreService: service.NewStoreService(os.Getenv("BASE_URL")),
 	}
 
 	staticDir := filepath.Join(root, "static")
@@ -41,10 +40,9 @@ func Serve() {
 
 	controller.SetupHome(mux, appContext)
 	controller.SetupStore(mux, appContext)
-	controller.SetupApp(mux, appContext)
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":8181",
 		Handler: mux,
 	}
 
@@ -59,7 +57,7 @@ func Serve() {
 		}
 	}()
 
-	log.Println("Starting server on :8080")
+	log.Println("Starting server on :8181")
 	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("Server failed: %s", err)
 	}

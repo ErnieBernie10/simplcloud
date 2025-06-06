@@ -13,6 +13,11 @@ type StoreApp struct {
 	Meta                  AppMeta
 }
 
+type IStore interface {
+	GetApps() ([]StoreApp, error)
+	GetApp(name string) (*StoreApp, error)
+}
+
 func (app *StoreApp) Logo(w io.Writer) error {
 	storeDir := os.Getenv("STORE_DIR")
 	storeFs := os.DirFS(storeDir)
