@@ -17,7 +17,6 @@ func NewStoreService(baseURL string) internal.IStore {
 		BaseURL: baseURL,
 	}
 }
-
 func (s *Store) GetApps() ([]internal.StoreApp, error) {
 	resp, err := http.Get(s.BaseURL + "/store")
 	if err != nil {

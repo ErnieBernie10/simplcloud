@@ -12,5 +12,6 @@ const (
 type AppContext struct {
 	Template     *TemplateManager
 	Logger       *log.Logger
+	Cdn          string
 	StoreService internal.IStore
 }

@@ -1,7 +1,15 @@
 {{ define "content" }}
+    {{- /*gotype: github.com/ErnieBernie10/simplecloud/src/internal/web/controller.StoreVM*/ -}}
+    {{ $root := . }}
     <div>Store</div>
-    {{ range $app := . }}
-        {{ template "app" $app }}
-    {{ end }}
+        <div class="flex">
+            {{ range $app := .Apps }}
+                <div class="flex justify-between border-2 border-gray-300 rounded-md p-2 m-2">
+                    {{ $app.Meta.DisplayName }}
+                    {{ $app.Meta.AppVersion }}
+                    <img src="{{ $root.Cdn }}/repo/apps/{{ $app.Name }}/{{ $app.Meta.Logo }}" />
+                </div>
+            {{ end }}
+        </div>
 {{ end }}
 {{ template "layout" . }}

@@ -31,6 +31,7 @@ func Serve() {
 	appContext := &core.AppContext{
 		Template:     tmplMngr,
 		Logger:       logger,
+		Cdn:          os.Getenv("CDN_URL"),
 		StoreService: service.NewStoreService(os.Getenv("BASE_URL")),
 	}
 

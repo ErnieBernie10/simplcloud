@@ -5,7 +5,6 @@ import (
 	"os"
 )
 
-//go:embed apps/**/docker-compose.yml apps/**/.env apps/**/meta.yml ../../repo/traefik/.env traefik/docker-compose.yml apps/**/*.svg
 var Opt embed.FS
 
 var TargetDir string
